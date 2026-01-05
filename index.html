@@ -1764,7 +1764,7 @@ return `<div class="header">
 <div class="header-title">${Auth.company?.name||'BuildFlow Pro'}</div>
 <div class="header-subtitle">${Auth.user?.email||''}</div>
 </div>
-<button class="header-btn" onclick="if(Auth.logout()){localStorage.clear();App.navigate('login')}">Излез</button>
+<button class="header-btn" onclick="if(Auth.logout()){localStorage.removeItem('bfv4_user');localStorage.removeItem('bfv4_company');localStorage.removeItem('bfv4_trial');App.navigate('login')}">Излез</button>
 </div>
 
 <div class="container">
