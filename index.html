@@ -921,7 +921,7 @@ this.company=null;
 this.trial=null;
 },
 register(email,password,companyName){
-this.user={id:'U'+Date.now(),email,name:email.split('@')[0],role:'OWNER',created:new Date().toISOString()};
+this.user={id:'U'+Date.now(),email,password,name:email.split('@')[0],role:'OWNER',created:new Date().toISOString()};
 this.company={
 id:'C'+Date.now(),
 name:companyName,
@@ -951,7 +951,7 @@ login(email,password){
 const u=localStorage.getItem('bfv4_user');
 if(u){
 const user=JSON.parse(u);
-if(user.email===email){
+if(user.email===email&&user.password===password){
 this.user=user;
 this.company=JSON.parse(localStorage.getItem('bfv4_company')||'{}');
 this.trial=JSON.parse(localStorage.getItem('bfv4_trial')||'{}');
