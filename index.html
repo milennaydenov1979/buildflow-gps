@@ -947,15 +947,30 @@ localStorage.setItem('bfv4_trial',JSON.stringify(this.trial));
 return true;
 },
 login(email,password){
-// Owner login
+// Owner login - BACKWARDS COMPATIBLE
 const u=localStorage.getItem('bfv4_user');
 if(u){
 const user=JSON.parse(u);
-if(user.email===email&&user.password===password){
+// Check email first
+if(user.email===email){
+// If user has password (new accounts), check it
+if(user.password){
+if(user.password===password){
 this.user=user;
 this.company=JSON.parse(localStorage.getItem('bfv4_company')||'{}');
 this.trial=JSON.parse(localStorage.getItem('bfv4_trial')||'{}');
 return {success:true,role:'OWNER'};
+}
+} else {
+// Old account without password - allow login with email only
+this.user=user;
+// Save password for future logins
+this.user.password=password;
+localStorage.setItem('bfv4_user',JSON.stringify(this.user));
+this.company=JSON.parse(localStorage.getItem('bfv4_company')||'{}');
+this.trial=JSON.parse(localStorage.getItem('bfv4_trial')||'{}');
+return {success:true,role:'OWNER'};
+}
 }
 }
 
@@ -963,11 +978,24 @@ return {success:true,role:'OWNER'};
 const staffData=localStorage.getItem('bfv4_staff');
 if(staffData){
 const staff=JSON.parse(staffData);
-const driver=staff.find(s=>
+// Try to find driver with email and password
+let driver=staff.find(s=>
 s.driverEmail===email&&
 s.driverPassword===password&&
 s.position==='Шофьор'
 );
+// If not found, try without password (old drivers)
+if(!driver){
+driver=staff.find(s=>
+s.driverEmail===email&&
+s.position==='Шофьор'
+);
+// If found, save password for next time
+if(driver){
+driver.driverPassword=password;
+localStorage.setItem('bfv4_staff',JSON.stringify(staff));
+}
+}
 if(driver){
 this.user={
 id:driver.id,
